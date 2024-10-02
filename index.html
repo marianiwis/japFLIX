@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Japflix</title>
 
-  <!-- Agregar jQuery -->
+  <!-- Agregar jQuery para poder usar el modal -->
   <!-- se supone que va antes que bootstrap porque dios lo encomendo -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -32,13 +32,13 @@
       <div class="container">
         <div class="row">
           <ul class="list-group bg-dark" id="lista">
-            <!-- Aquí se insertarán las tarjetas -->
+            <!-- aca se insertarán las tarjetas -->
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Contenedor modal para mostrar detalles de la película seleccionada -->
+    <!-- contenedor modal para mostrar detalles de la película seleccionada -->
     <div class="modal fade" id="movieDetailsModal" tabindex="-1" role="dialog" aria-labelledby="movieDetailsModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -78,24 +78,24 @@
   <script src="js/bootstrap.bundle.min.js"></script>
 
   <script>
-    let peliculas = []; // Aquí se almacenarán las películas obtenidas
+    let peliculas = []; // aca voy a ir almacenando las películas obtenidas
 
-    // Traer datos del archivo JSON
+    // traigo los datos del archivo JSON
     fetch('https://japceibal.github.io/japflix_api/movies-data.json')
       .then(response => response.json())
       .then(data => {
-        peliculas = data; // Guardar datos de las películas
+        peliculas = data; // guardar datos de las películas
       })
       .catch(error => console.error('Error:', error));
 
-    // Evento para buscar películas cuando se presiona el botón "Buscar"
+    // evento para buscar películas cuando se presiona el botón "Buscar"
     document.getElementById('btnBuscar').addEventListener('click', function() {
       const criterio = document.getElementById('inputBuscar').value.toLowerCase();
-      const resultados = buscarPeliculas(criterio); // Función de búsqueda
-      mostrarPeliculas(resultados); // Mostrar los resultados
+      const resultados = buscarPeliculas(criterio); // función de búsqueda
+      mostrarPeliculas(resultados); // mostrar los resultados
     });
 
-    // Función para buscar películas según el criterio ingresado
+    // función para buscar películas según el criterio ingresado
     function buscarPeliculas(criterio) {
       const criterioLower = criterio.toLowerCase();
 
@@ -122,7 +122,7 @@
       return resultadosPorOtrosCampos;
     }
 
-    // Función para mostrar las películas encontradas en la lista
+    // función para mostrar las películas encontradas en la lista
     function mostrarPeliculas(peliculas) {
       const lista = document.getElementById('lista');
       lista.innerHTML = ''; // Limpiar resultados anteriores
@@ -143,7 +143,7 @@
         });
     }
 
-    // Mostrar los detalles de la película seleccionada
+    // mostrar los detalles de la película seleccionada
     function mostrarDetalles(id) {
       const pelicula = peliculas.find(p => p.id === id);
       document.getElementById('movieDetailsModalLabel').innerText = pelicula.title;
@@ -157,7 +157,7 @@
       document.getElementById('movieBudget').innerText = `Presupuesto: $${pelicula.budget.toLocaleString()}`;
       document.getElementById('movieRevenue').innerText = `Ganancias: $${pelicula.revenue.toLocaleString()}`;
 
-      // Lógica para el botón "Mostrar Detalles"
+      // lógica para el botón "Mostrar Detalles"
       const btnShowMore = document.getElementById('btnShowMore');
       btnShowMore.onclick = function() {
         const additionalInfo = document.getElementById('additionalInfo');
@@ -173,19 +173,19 @@
       $('#movieDetailsModal').modal('show');
     }
 
-    // Evento para cerrar el modal manualmente
+    // evento para cerrar el modal manualmente o sea con la cruz y eso
     document.querySelector('.close').addEventListener('click', function () {
       $('#movieDetailsModal').modal('hide');
     });
 
-    // Función para generar estrellas
+    // función para generar estrellas
     function generarEstrellas(puntuacion) {
       let estrellasHtml = '';
       for (let i = 1; i <= 5; i++) {
         if (i <= puntuacion) {
-          estrellasHtml += '<span class="fa fa-star checked"></span>'; // Estrella llena
+          estrellasHtml += '<span class="fa fa-star checked"></span>'; // estrellita llena
         } else {
-          estrellasHtml += '<span class="fa fa-star"></span>'; // Estrella vacía
+          estrellasHtml += '<span class="fa fa-star"></span>'; // estrellita vacía
         }
       }
       return estrellasHtml;

@@ -27,20 +27,24 @@ main {
     height: fit-content;
 }
 
+/*borde y coso*/
 .card {
     border: 2px solid red; /* Agrega un borde rojo de 2 píxeles */
     border-radius: 8px; /* Opcional: añade bordes redondeados */
 }
 
+/*cursiva a las cards de las pelis*/
 .card-body h5,
 .card-body p {
     font-style: italic; /* Aplica cursiva al título y párrafos */
 }
 
+/*color de las stars*/
 .stars {
     color: rgb(249, 212, 0);
 }
 
+/*color del boton more*/
 .btn-more {
     background-color: red; /* Cambia el color de fondo */
     color: rgb(17, 3, 3); /* Cambia el color del texto */
