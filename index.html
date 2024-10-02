@@ -6,14 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Japflix</title>
 
+  <!-- Agregar jQuery -->
+  <!-- se supone que va antes que bootstrap porque dios lo encomendo -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="css/style.css">
-  
+
 </head>
 
 <body class="bg-dark">
-  <main>
+  <main class="bg-dark">
     <div class="text-center container">
       <div class="row py-lg-3">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -24,9 +28,40 @@
       </div>
     </div>
 
-    <div class="album">
-      <ul class="list-group container" id="lista">
-      </ul>
+    <div class="album bg-dark">
+      <div class="container">
+        <div class="row">
+          <ul class="list-group bg-dark" id="lista">
+            <!-- Aquí se insertarán las tarjetas -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor para mostrar detalles de la película seleccionada -->
+    <!-- Modal para mostrar detalles de la película -->
+    <div class="modal fade" id="movieDetailsModal" tabindex="-1" role="dialog" aria-labelledby="movieDetailsModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="movieDetailsModalLabel"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p id="movieOverview"></p>
+            <p id="movieGenres"></p>
+            <button class="btn btn-more" id="btnShowMore">Mostrar Detalles</button>
+            <div id="additionalInfo" style="display: none;">
+              <p id="movieReleaseDate"></p>
+              <p id="movieRuntime"></p>
+              <p id="movieBudget"></p>
+              <p id="movieRevenue"></p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -36,13 +71,126 @@
         <a href="#">Volver arriba</a>
       </p>
       <p class="mb-1">Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">
-          Jovenes a Programar</a>.
+          Jóvenes a Programar</a>.
       <p class="mb-1">Generado con fines estrictamente educativos.</p>
     </div>
   </footer>
 
   <script src="js/bootstrap.bundle.min.js"></script>
 
-</body>
+  <script>
+    let peliculas = []; // Aquí se almacenarán las películas obtenidas
 
+    // Traer datos del archivo JSON
+    fetch('https://japceibal.github.io/japflix_api/movies-data.json')
+      .then(response => response.json())
+      .then(data => {
+        peliculas = data; // Guardar datos de las películas
+      })
+      .catch(error => console.error('Error:', error));
+
+    // Evento para buscar películas cuando se presiona el botón "Buscar"
+    document.getElementById('btnBuscar').addEventListener('click', function() {
+      const criterio = document.getElementById('inputBuscar').value.toLowerCase();
+      const resultados = buscarPeliculas(criterio); // Función de búsqueda
+      mostrarPeliculas(resultados); // Mostrar los resultados
+    });
+
+    // Función para buscar películas según el criterio ingresado
+    function buscarPeliculas(criterio) {
+      const criterioLower = criterio.toLowerCase();
+
+      const resultadosPorTitulo = peliculas.filter(pelicula => 
+          pelicula.title.toLowerCase().includes(criterioLower)
+      );
+
+      if (resultadosPorTitulo.length > 0) {
+          return resultadosPorTitulo;
+      }
+
+      const resultadosPorOtrosCampos = peliculas.filter(pelicula => {
+          const tagline = pelicula.tagline ? pelicula.tagline.toLowerCase() : '';
+          const overview = pelicula.overview.toLowerCase();
+          const generos = pelicula.genres.map(genero => genero.name.toLowerCase());
+
+          const coincideTagline = tagline.includes(criterioLower);
+          const coincideOverview = overview.includes(criterioLower);
+          const coincideGenero = generos.some(genero => genero.includes(criterioLower));
+
+          return coincideTagline || coincideOverview || coincideGenero;
+      });
+
+      return resultadosPorOtrosCampos;
+    }
+
+    // Función para mostrar las películas encontradas en la lista
+    function mostrarPeliculas(peliculas) {
+      const lista = document.getElementById('lista');
+      lista.innerHTML = ''; // Limpiar resultados anteriores
+
+      peliculas.forEach(pelicula => {
+          const item = document.createElement('li');
+          item.className = 'list-group-item mb-4 bg-dark';
+          item.innerHTML = `
+            <div class="card bg-dark text-light shadow-sm" onclick="mostrarDetalles(${pelicula.id})"> <!-- Se eliminó el botón y se agregó el evento al div -->
+              <div class="card-body">
+                <h5 class="card-title">${pelicula.title}</h5>
+                <p class="card-text">${pelicula.tagline}</p>
+                <p class="card-text">Rating: ${generarEstrellas(Math.round(pelicula.vote_average / 2))}</p>
+              </div>
+            </div>
+          `;
+          lista.appendChild(item);
+        });
+    }
+
+    // Mostrar los detalles de la película seleccionada
+    function mostrarDetalles(id) {
+      const pelicula = peliculas.find(p => p.id === id);
+      document.getElementById('movieDetailsModalLabel').innerText = pelicula.title;
+      document.getElementById('movieOverview').innerText = pelicula.overview;
+
+      const genres = pelicula.genres.map(g => g.name).join(', ');
+      document.getElementById('movieGenres').innerText = `Géneros: ${genres}`;
+
+      document.getElementById('movieReleaseDate').innerText = `Año de lanzamiento: ${new Date(pelicula.release_date).getFullYear()}`;
+      document.getElementById('movieRuntime').innerText = `Duración: ${pelicula.runtime} minutos`;
+      document.getElementById('movieBudget').innerText = `Presupuesto: $${pelicula.budget.toLocaleString()}`;
+      document.getElementById('movieRevenue').innerText = `Ganancias: $${pelicula.revenue.toLocaleString()}`;
+
+      // Lógica para el botón "Mostrar Detalles"
+      const btnShowMore = document.getElementById('btnShowMore');
+      btnShowMore.onclick = function() {
+        const additionalInfo = document.getElementById('additionalInfo');
+        if (additionalInfo.style.display === 'none') {
+          additionalInfo.style.display = 'block';
+          btnShowMore.innerText = 'Ocultar Detalles';
+        } else {
+          additionalInfo.style.display = 'none';
+          btnShowMore.innerText = 'Mostrar Detalles';
+        }
+      };
+
+      $('#movieDetailsModal').modal('show');
+    }
+
+    // Evento para cerrar el modal manualmente
+    document.querySelector('.close').addEventListener('click', function () {
+      $('#movieDetailsModal').modal('hide');
+    });
+
+    // Función para generar estrellas
+    function generarEstrellas(puntuacion) {
+      let estrellasHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        if (i <= puntuacion) {
+          estrellasHtml += '<span class="fa fa-star checked"></span>'; // Estrella llena
+        } else {
+          estrellasHtml += '<span class="fa fa-star"></span>'; // Estrella vacía
+        }
+      }
+      return estrellasHtml;
+    }
+  </script>
+</body>
 </html>
