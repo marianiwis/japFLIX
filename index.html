@@ -51,7 +51,7 @@
           <div class="modal-body">
             <p id="movieOverview"></p>
             <p id="movieGenres"></p>
-            <button class="btn btn-more" id="btnShowMore">Mostrar Detalles</button>
+            <button class="btn btn-more" id="btnShowMore">Show More</button>
             <div id="additionalInfo" style="display: none;">
               <p id="movieReleaseDate"></p>
               <p id="movieRuntime"></p>
@@ -150,23 +150,23 @@
       document.getElementById('movieOverview').innerText = pelicula.overview;
 
       const genres = pelicula.genres.map(g => g.name).join(', ');
-      document.getElementById('movieGenres').innerText = `Géneros: ${genres}`;
+      document.getElementById('movieGenres').innerText = `Genres: ${genres}`;
 
-      document.getElementById('movieReleaseDate').innerText = `Año de lanzamiento: ${new Date(pelicula.release_date).getFullYear()}`;
-      document.getElementById('movieRuntime').innerText = `Duración: ${pelicula.runtime} minutos`;
-      document.getElementById('movieBudget').innerText = `Presupuesto: $${pelicula.budget.toLocaleString()}`;
-      document.getElementById('movieRevenue').innerText = `Ganancias: $${pelicula.revenue.toLocaleString()}`;
+      document.getElementById('movieReleaseDate').innerText = `Year: ${new Date(pelicula.release_date).getFullYear()}`;
+      document.getElementById('movieRuntime').innerText = `Runtime: ${pelicula.runtime} minutos`;
+      document.getElementById('movieBudget').innerText = `Budget: $${pelicula.budget.toLocaleString()}`;
+      document.getElementById('movieRevenue').innerText = `Revenue: $${pelicula.revenue.toLocaleString()}`;
 
-      // lógica para el botón "Mostrar Detalles"
+      // lógica para el botón "Show More"
       const btnShowMore = document.getElementById('btnShowMore');
       btnShowMore.onclick = function() {
         const additionalInfo = document.getElementById('additionalInfo');
         if (additionalInfo.style.display === 'none') {
           additionalInfo.style.display = 'block';
-          btnShowMore.innerText = 'Ocultar Detalles';
+          btnShowMore.innerText = 'Hide';
         } else {
           additionalInfo.style.display = 'none';
-          btnShowMore.innerText = 'Mostrar Detalles';
+          btnShowMore.innerText = 'Show More';
         }
       };
 
